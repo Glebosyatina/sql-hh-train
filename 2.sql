@@ -7,7 +7,7 @@ INSERT INTO users (name, surname, patronymic) VALUES
         ('Артем', 'Костерин', 'Игоревич'),                                                                                         
         ('Юлия', 'Кругликова', 'Павловна'),                                                                                
         ('Евгений', 'Озеринников', 'Николаевич'),                                                                                 
-        ('Карина', 'Цой', 'Эдуардовна')
+        ('Карина', 'Цой', 'Эдуардовна');
 
 -- регионы
 INSERT INTO areas(area_name) VALUES
@@ -16,7 +16,7 @@ INSERT INTO areas(area_name) VALUES
 	('Ивановская область'),
 	('Ярославская область'),
 	('Республика Карелия'),
-	('Мурманская область')
+	('Мурманская область');
 
 -- специализации/профессии
 INSERT INTO specializations(name) VALUES
@@ -25,16 +25,16 @@ INSERT INTO specializations(name) VALUES
 	('Аналитик'),
 	('Строитель'),
 	('Режиссер'),
-	('Врач')	
+	('Врач');	
 
 -- работодатели
 INSERT INTO employers(employer_name, area_id) VALUES
 	('Яндекс', 1),
 	('Магнит', 2),
-	('Google'. 3),
+	('Google', 3),
 	('Netflix', 4),
 	('Сбер', 5),
-	('Тинкофф', 6)
+	('Тинкофф', 6);
 
 -- вакансии 10к
 with test_data(id, title, salary, random_time) as (select generate_series(1, 10000) as id, 
@@ -67,7 +67,11 @@ with test_data(id, res_id, vac_id) as (select generate_series(1, 1000000) as id,
                                       floor(random() * 10000 + 1)
 )
 insert into responses (resume_id, vacancy_id, created_at) 
-        select res_id, vac_id, v.created_at + (((floor(random() * 90 + 1))::text || ' day')::interval) -- прибавляем к дате создание вакансии случайное колво дней, 
-		--  иначе если взять просто случаное время, то отлик может быть раньше чем была опубликована вакансия - противоречит логике
+        select res_id, vac_id, v.created_at + (((floor(random() * 365 + 1))::text || ' day')::interval) -- прибавляем к дате создание вакансии случайное колво дней, 
+                --  иначе если взять просто случаное время, то отлик может быть раньше чем была опубликована вакансия - противоречит логике
         from test_data 
-		join vacancies v on test_data.vac_id = v.vacancy_id ;
+                join vacancies v on test_data.vac_id = v.vacancy_id 
+on conflict(resume_id, vacancy_id) do nothing 	-- для игнорирования конфликтующих строк
+												--(когда с одним и тем же резюме пытаемся откликнутся на одну вакансию кучу раз)
+;
+

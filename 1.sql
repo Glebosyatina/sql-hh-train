@@ -46,9 +46,10 @@ CREATE TABLE vacancies (
 );
 
 CREATE TABLE responses (
-	response_id		INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,			-- ID ОТКЛИКА
+	response_id		INTEGER GENERATED ALWAYS AS IDENTITY,						-- ID ОТКЛИКА
 	resume_id 		INTEGER NOT NULL REFERENCES resumes(resume_id),				-- ID ОТКЛИКНУВШЕГОСЯ РЕЗЮМЕ
 	vacancy_id		INTEGER NOT NULL REFERENCES vacancies(vacancy_id),			-- ID ВАКАНСИИ
-	created_at		TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP										-- ВРЕМЯ ОТКЛИКА
+	created_at		TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,			-- ВРЕМЯ ОТКЛИКА
+	PRIMARY KEY(resume_id, vacancy_id) 											-- PRIMARY KEY чтобы с одним резюме нельзя было кучу раз откликаться
 );
 
